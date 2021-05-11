@@ -10,7 +10,13 @@
 
   It is a good idea to list the modules that your application depends on in the package.json in the project root
  */
-var util = require('util');
+var _ = require('lodash');
+
+var controllerHelper = require('../helpers/controller.helper');
+var messageHelper = require('../helpers/message.helper');
+var puzzleService = require('../services/puzzle.service');
+
+const CONTROLLER_NAME = '[Puzzle Controller]';
 
 /*
  Once you 'require' a module you can reference the things that it exports.  These are defined in module.exports.
@@ -25,7 +31,8 @@ var util = require('util');
   we specify that in the exports of this module that 'hello' maps to the function named 'hello'
  */
 module.exports = {
-  hello: hello
+  getSolutionPuzzle: getSolutionPuzzle,
+  CONTROLLER_NAME
 };
 
 /*
@@ -34,11 +41,22 @@ module.exports = {
   Param 1: a handle to the request object
   Param 2: a handle to the response object
  */
-function hello(req, res) {
-  // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
-  var name = req.swagger.params.name.value || 'stranger';
-  var hello = util.format('Hello, %s!', name);
+function getSolutionPuzzle(request, response) {
+  try {
+    // Receiving parameters from body
+    var params = request.body;
 
-  // this sends back a JSON response which is a single string
-  res.json(hello);
+    // Call to service
+    var result = puzzleService.solvePuzzle(params);
+
+    // Returning the result
+    // this sends back a JSON response which is a single string
+    if (!_.isUndefined(result) && _.isUndefined(result.error)) {
+      response.status(200).json(result);
+    } else {
+      messageHelper.handleErrorResponse(CONTROLLER_NAME, 'getSolutionPuzzle', response, result);
+    }
+  } catch (error) {
+    controllerHelper.handleErrorResponse(CONTROLLER_NAME, 'getSolutionPuzzle', response);
+  }
 }
