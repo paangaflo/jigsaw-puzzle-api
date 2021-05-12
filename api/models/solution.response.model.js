@@ -1,5 +1,7 @@
-'use strict';
+function SolutionResponse(solution) {
+  this.solution = solution;
+}
 
-exports.SolutionResponse = function (solution) {
-    this.solution = solution;
+module.exports = {
+  SolutionResponse,
 };

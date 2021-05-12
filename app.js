@@ -1,27 +1,23 @@
-'use strict';
+const SwaggerExpress = require('swagger-express-mw');
+const swaggerUi = require('swagger-ui-express');
+const yamljs = require('yamljs');
 
-var SwaggerExpress = require('swagger-express-mw');
-var app = require('express')();
-module.exports = app; // for testing
+const app = require('express')();
 
-var config = {
-  appRoot: __dirname // required config
+module.exports = app;
+
+const config = {
+  appRoot: __dirname,
 };
 
-SwaggerExpress.create(config, function(err, swaggerExpress) {
+const swaggerDocument = yamljs.load('./api/swagger/swagger.yaml');
+
+SwaggerExpress.create(config, (err, swaggerExpress) => {
   if (err) { throw err; }
 
-  // install middleware
   swaggerExpress.register(app);
 
-  var port = process.env.PORT || 10010;
-  app.listen(port);
+  app.listen(process.env.PORT || 10010);
 });
 
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./api/swagger/swagger.yaml');
-var options = {
-  explorer: false
-};
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
