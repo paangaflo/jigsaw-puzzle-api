@@ -17,3 +17,11 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   var port = process.env.PORT || 10010;
   app.listen(port);
 });
+
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./api/swagger/swagger.yaml');
+var options = {
+  explorer: false
+};
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
