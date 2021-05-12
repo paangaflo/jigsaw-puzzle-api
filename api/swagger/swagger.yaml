@@ -1,52 +1,41 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Swagger jigsaw puzzle API
-# during dev, should point to your local machine
-# host: localhost:10010
-# basePath prefixes all resource paths 
+  title: "Swagger jigsaw puzzle API"
 basePath: /api/v1
-# 
 schemes:
   - https
 paths:
   /jigsaw:
-    # binds a127 app logic to a route
     x-swagger-router-controller: puzzle.controller
     post:
       tags:
       - "puzzle"
       summary: "Add a new puzzle to find a solution"
-      description: Will take as input a jigsaw puzzle and must respond with a solution, or say that no solution exists.
-      # format of bodies a client can send (Content-Type)
+      description: "Will take as input a jigsaw puzzle and must respond with a solution, or say that no solution exists."
       consumes:
       - "application/json"
-      # format of the responses to the client (Accepts)
       produces:
       - "application/json"
-      # used as the method name of the controller
       operationId: getSolutionPuzzle
       parameters:
         - name: puzzle
           in: body
-          description: The jigsaw puzzle to find a solution
+          description: "The jigsaw puzzle to find a solution"
           required: true
           schema:
             $ref: "#/definitions/Puzzle"
       responses:
         "200":
-          description: Success
+          description: "Success"
           schema:
-            # a pointer to a definition
             $ref: "#/definitions/SolutionResponse"
-        # responses may fall through to errors
         default:
-          description: Error
+          description: "Error"
           schema:
             $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
 definitions:
   Piece:
     type: array
