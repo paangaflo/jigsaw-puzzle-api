@@ -3,13 +3,11 @@ info:
   version: "0.0.1"
   title: Swagger jigsaw puzzle API
 # during dev, should point to your local machine
-host: localhost:10010
+# host: localhost:10010
 # basePath prefixes all resource paths 
-basePath: /
+basePath: /api/v1
 # 
 schemes:
-  # tip: remove http to make production-grade
-  - http
   - https
 paths:
   /jigsaw:
@@ -23,10 +21,8 @@ paths:
       # format of bodies a client can send (Content-Type)
       consumes:
       - "application/json"
-      - "application/xml"
       # format of the responses to the client (Accepts)
       produces:
-      - "application/xml"
       - "application/json"
       # used as the method name of the controller
       operationId: getSolutionPuzzle
@@ -70,8 +66,8 @@ definitions:
     properties:
       solution:
         type: 
-        - array
-        - 'null'
+          - array
+          - 'null'
         items:
           type: string
   ErrorResponse:
