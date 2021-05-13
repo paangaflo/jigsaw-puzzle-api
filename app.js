@@ -4,7 +4,7 @@ const yamljs = require('yamljs');
 
 const app = require('express')();
 
-module.exports = app;
+module.exports = app; // Only for testing
 
 const config = {
   appRoot: __dirname,

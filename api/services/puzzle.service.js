@@ -1,11 +1,8 @@
 const { SolutionResponse } = require('../models/solution.response.model');
+const { RestrictionException } = require('../exeptions/restriction.exception');
 
 const MINIMUM_LIMIT = process.env.MINIMUM_LIMIT || 1;
 const MAXIMUM_LIMIT = process.env.MAXIMUM_LIMIT || 10;
-
-function RestrictionException(message) {
-  this.message = message;
-}
 
 function countCharacterInString(value, regex) {
   return (value.match(regex) || []).length;
@@ -18,36 +15,36 @@ function numberBetweenRange(value) {
 function validateInputRequest(params) {
   if (!numberBetweenRange(params.boardSize)) {
     throw new RestrictionException(
-      `boardSize attribute must be an integer between ${MINIMUM_LIMIT} and ${MAXIMUM_LIMIT}`,
+      `boardSize attribute must be an integer between ${MINIMUM_LIMIT} and ${MAXIMUM_LIMIT}`
     );
   }
 
   if (!numberBetweenRange(params.pieces.length)) {
     throw new RestrictionException(
-      `The number of pieces must be between ${MINIMUM_LIMIT} and ${MAXIMUM_LIMIT}`,
+      `The number of pieces must be between ${MINIMUM_LIMIT} and ${MAXIMUM_LIMIT}`
     );
   }
 
   params.pieces.forEach((piece) => {
     if (!numberBetweenRange(piece.length)) {
       throw new RestrictionException(
-        `Each piece must contain minimum ${MINIMUM_LIMIT} descriptions and maximum ${MAXIMUM_LIMIT} descriptions`,
+        `Each piece must contain minimum ${MINIMUM_LIMIT} descriptions and maximum ${MAXIMUM_LIMIT} descriptions`
       );
     }
     piece.forEach((description) => {
       if (!numberBetweenRange(description.length)) {
         throw new RestrictionException(
-          `Each description must contain minimum ${MINIMUM_LIMIT} characters and maximum ${MAXIMUM_LIMIT} characters`,
+          `Each description must contain minimum ${MINIMUM_LIMIT} characters and maximum ${MAXIMUM_LIMIT} characters`
         );
       }
       if (!(/^[.*]*$/).test(description)) {
         throw new RestrictionException(
-          'Each description must contain only the following characters [.][*]',
+          'Each description must contain only the following characters [.][*]'
         );
       }
       if (!description.includes('*')) {
         throw new RestrictionException(
-          'Each description must contain minimum one character [*]',
+          'Each description must contain minimum one character [*]'
         );
       }
     });
@@ -118,5 +115,9 @@ function solvePuzzle(params) {
 }
 
 module.exports = {
+  MAXIMUM_LIMIT, // Only test
+  MINIMUM_LIMIT, // Only test
+  validateQuantitySpacesOccupies, // Only test
+  validateInputRequest, // Only test
   solvePuzzle,
 };
