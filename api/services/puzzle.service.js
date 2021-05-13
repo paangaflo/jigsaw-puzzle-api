@@ -7,6 +7,10 @@ function RestrictionException(message) {
   this.message = message;
 }
 
+function countCharacterInString(value, regex) {
+  return (value.match(regex) || []).length;
+}
+
 function numberBetweenRange(value) {
   return value >= MINIMUM_LIMIT && value <= MAXIMUM_LIMIT;
 }
@@ -50,9 +54,57 @@ function validateInputRequest(params) {
   });
 }
 
+function validateQuantitySpacesOccupies(params) {
+  const matrizlength = params.boardSize * params.boardSize;
+  let spacesOccupies = 0;
+
+  params.pieces.forEach((piece) => {
+    piece.forEach((description) => {
+      spacesOccupies = countCharacterInString(description, /\*/g) + spacesOccupies;
+    });
+  });
+
+  return (matrizlength === spacesOccupies);
+}
+
+function createPiece(piece, label) {
+  const rows = [];
+
+  for (let i = 0; i < piece.length; i += 1) {
+    const characters = piece[i].split('' || []);
+    const cols = [];
+    for (let j = 0; j < characters.length; j += 1) {
+      cols[j] = (characters[j] === '*') ? label : 'x';
+    }
+    rows.push(cols);
+  }
+
+  return rows;
+}
+
+function calculeSolution(pieces, puzzle, boardSize) {
+  return [];
+}
+
+function buildPuzzle(params) {
+  const puzzle = [];
+  const pieces = [];
+
+  for (let i = 0; i < params.pieces.length; i += 1) {
+    pieces[i] = createPiece(params.pieces[i], i);
+  }
+
+  return calculeSolution(pieces, puzzle, params.boardSize);
+}
+
 function solvePuzzle(params) {
   try {
     validateInputRequest(params);
+
+    if (validateQuantitySpacesOccupies(params)) {
+      return new SolutionResponse(buildPuzzle(params));
+    }
+
     return new SolutionResponse(null);
   } catch (error) {
     if (error instanceof RestrictionException) {
