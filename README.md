@@ -234,7 +234,7 @@ Run unit tests with the following command:
 ```bash
 npm run test
 ```
-![alt text](https://github.com/paangaflo/jigsaw-puzzle-ap/blob/master/images/capture_test.png?raw=true)
+![alt text](https://github.com/paangaflo/jigsaw-puzzle-api/blob/master/images/capture_test.png?raw=true)
 
 ## Coverage unit test
 
@@ -243,7 +243,7 @@ To see percentage of code coverage on unit tests use the following command:
 ```bash
 npm run cover
 ```
-![alt text](https://github.com/paangaflo/jigsaw-puzzle-ap/blob/master/images/capture_coverage.png?raw=true)
+![alt text](https://github.com/paangaflo/jigsaw-puzzle-api/blob/master/images/capture_coverage.png?raw=true)
 
 ## Eslint
 
@@ -252,7 +252,7 @@ To improve code style, ESLint. Use following command:
 ```bash
 npm run cover
 ```
-![alt text](https://github.com/paangaflo/jigsaw-puzzle-ap/blob/master/images/capture_lint.png?raw=true)
+![alt text](https://github.com/paangaflo/jigsaw-puzzle-api/blob/master/images/capture_lint.png?raw=true)
 
 ## Prettier
 
@@ -261,7 +261,7 @@ To improve code formatter, Prettier. Use following command:
 ```bash
 npm run format
 ```
-![alt text](https://github.com/paangaflo/jigsaw-puzzle-ap/blob/master/images/capture_format.png?raw=true)
+![alt text](https://github.com/paangaflo/jigsaw-puzzle-api/blob/master/images/capture_format.png?raw=true)
 
 ## Built With
 
@@ -274,7 +274,7 @@ npm run format
 * [lodash.isundefined](https://www.npmjs.com/package/lodash.isundefined)
 * [swagger-express-mw](https://www.npmjs.com/package/swagger-express-mw)
 * [swagger-ui-express](https://www.npmjs.com/package/swagger-ui-express)
-* [yamljs]https://www.npmjs.com/package/yamljs)
+* [yamljs](https://www.npmjs.com/package/yamljs)
 
 ## Authors
 
