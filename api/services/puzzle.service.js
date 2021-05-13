@@ -37,7 +37,7 @@ function validateInputRequest(params) {
           `Each description must contain minimum ${MINIMUM_LIMIT} characters and maximum ${MAXIMUM_LIMIT} characters`
         );
       }
-      if (!(/^[.*]*$/).test(description)) {
+      if (!/^[.*]*$/.test(description)) {
         throw new RestrictionException(
           'Each description must contain only the following characters [.][*]'
         );
@@ -61,7 +61,7 @@ function validateQuantitySpacesOccupies(params) {
     });
   });
 
-  return (matrizlength === spacesOccupies);
+  return matrizlength === spacesOccupies;
 }
 
 function createPiece(piece, label) {
@@ -71,7 +71,7 @@ function createPiece(piece, label) {
     const characters = piece[i].split('' || []);
     const cols = [];
     for (let j = 0; j < characters.length; j += 1) {
-      cols[j] = (characters[j] === '*') ? label : 'x';
+      cols[j] = characters[j] === '*' ? label : 'x';
     }
     rows.push(cols);
   }
