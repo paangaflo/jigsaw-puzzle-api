@@ -3,10 +3,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 
-// Main module that we are testing
 const puzzleService = require('../../../api/services/puzzle.service');
-// Secondary modules
-const messageHelper = require('../../../api/helpers/message.helper');
 
 describe('Puzzle Service Tests', () => {
   describe('solvePuzzle Tests', () => {

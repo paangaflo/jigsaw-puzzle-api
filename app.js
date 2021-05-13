@@ -13,7 +13,9 @@ const config = {
 const swaggerDocument = yamljs.load('./api/swagger/swagger.yaml');
 
 SwaggerExpress.create(config, (err, swaggerExpress) => {
-  if (err) { throw err; }
+  if (err) {
+    throw err;
+  }
 
   swaggerExpress.register(app);
 
