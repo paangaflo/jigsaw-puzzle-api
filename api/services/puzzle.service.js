@@ -51,6 +51,35 @@ function validateInputRequest(params) {
   });
 }
 
+function createMatrix(x, y) {
+  const matrix = new Array(x);
+
+  for (let i = 0; i < x; i += 1) {
+    matrix[i] = new Array(y);
+  }
+
+  return matrix;
+}
+
+function permutator(input) {
+  const result = [];
+
+  function permute(arr, data) {
+    var cur, memo = data || [];
+
+    for (let i = 0; i < arr.length; i += 1) {
+      cur = arr.splice(i, 1)[0];
+      if (arr.length === 0) result.push(memo.concat([cur]));
+      permute(arr.slice(), memo.concat([cur]));
+      arr.splice(i, 0, cur);
+    }
+
+    return result;
+  }
+
+  return permute(input);
+}
+
 function validateQuantitySpacesOccupies(params) {
   const matrizlength = params.boardSize * params.boardSize;
   let spacesOccupies = 0;
@@ -64,45 +93,65 @@ function validateQuantitySpacesOccupies(params) {
   return matrizlength === spacesOccupies;
 }
 
-function createPiece(piece, label) {
-  const rows = [];
+function findFreeSpaceInRow(matrix, row, boardSize) {
+  for (let j = 0; j < boardSize; j += 1) {
+    if (matrix[row][j] === undefined) return { x: row, y: j };
+  }
 
-  for (let i = 0; i < piece.length; i += 1) {
-    const characters = piece[i].split('' || []);
-    const cols = [];
-    for (let j = 0; j < characters.length; j += 1) {
-      cols[j] = characters[j] === '*' ? label : 'x';
+  return null;
+}
+
+function locatePieceInRow(point, matrix, line, label) {
+  try {
+    const positions = line.split('');
+
+    for (let i = 0; i < positions.length; i += 1) {
+      if (positions[i] === '*') matrix[point.x][point.y + i] = label.toString();
     }
-    rows.push(cols);
-  }
 
-  return rows;
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
-function calculeSolution(pieces, puzzle, boardSize) {
-  return [];
-}
+function getSolutionForPermutation(permutation, pieces, boardSize) {
+  const matrix = createMatrix(boardSize, boardSize);
 
-function buildPuzzle(params) {
-  const puzzle = [];
-  const pieces = [];
+  for (let i = 0; i < permutation.length; i += 1) {
+    for (let j = 0; j < boardSize; j += 1) {
+      if (pieces[permutation[i]][j]) {
+        const point = findFreeSpaceInRow(matrix, j, boardSize);
 
-  for (let i = 0; i < params.pieces.length; i += 1) {
-    pieces[i] = createPiece(params.pieces[i], i);
+        const isPossible = locatePieceInRow(point, matrix, pieces[permutation[i]][j], 'X');
+        if (!isPossible) return null;
+      }
+    }
   }
 
-  return calculeSolution(pieces, puzzle, params.boardSize);
+  return matrix;
 }
 
 function solvePuzzle(params) {
   try {
     validateInputRequest(params);
+    const solutions = [];
 
     if (validateQuantitySpacesOccupies(params)) {
-      return new SolutionResponse(buildPuzzle(params));
+      const permutations = permutator([...Array(params.pieces.length).keys()]);
+
+      for (let i = 0; i < permutations.length; i += 1) {
+        const solution = getSolutionForPermutation(
+          permutations[i],
+          params.pieces,
+          params.boardSize
+        );
+
+        if (solution) solution.push(solution);
+      }
     }
 
-    return new SolutionResponse(null);
+    return new SolutionResponse(solutions.length > 0 ? solutions : null);
   } catch (error) {
     if (error instanceof RestrictionException) {
       return {
