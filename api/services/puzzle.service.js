@@ -1,3 +1,5 @@
+/* eslint no-param-reassign: 'error' */
+
 const { SolutionResponse } = require('../models/solution.response.model');
 const { RestrictionException } = require('../exeptions/restriction.exception');
 
@@ -51,6 +53,30 @@ function validateInputRequest(params) {
   });
 }
 
+function createMatrix(x, y) {
+  const matrix = new Array(x);
+
+  for (let i = 0; i < x; i += 1) {
+    matrix[i] = new Array(y);
+  }
+
+  return matrix;
+}
+
+function permutator(elements, data, permutations) {
+  let cur = data || [];
+  const memo = data || [];
+
+  for (let i = 0; i < elements.length; i += 1) {
+    cur = elements.splice(i, 1);
+    if (elements.length === 0) permutations.push(memo.concat([cur[0]]));
+    permutator(elements.slice(), memo.concat([cur[0]]), permutations);
+    elements.splice(i, 0, cur[0]);
+  }
+
+  return permutations;
+}
+
 function validateQuantitySpacesOccupies(params) {
   const matrizlength = params.boardSize * params.boardSize;
   let spacesOccupies = 0;
@@ -64,45 +90,93 @@ function validateQuantitySpacesOccupies(params) {
   return matrizlength === spacesOccupies;
 }
 
-function createPiece(piece, label) {
-  const rows = [];
+function isPossibleLocatePieceInMatrix(point, matrix, piece, boardSize) {
+  try {
+    for (let i = 0; i < piece.length; i += 1) {
+      const positions = piece[i].split('');
 
-  for (let i = 0; i < piece.length; i += 1) {
-    const characters = piece[i].split('' || []);
-    const cols = [];
-    for (let j = 0; j < characters.length; j += 1) {
-      cols[j] = characters[j] === '*' ? label : 'x';
+      for (let j = 0; j < positions.length; j += 1) {
+        if ((point.x + i) >= boardSize) {
+          return false;
+        }
+        if ((point.y + j) >= boardSize) {
+          return false;
+        }
+        if (positions[j] === '*' && matrix[point.x + i][point.y + j] !== undefined) {
+          return false;
+        }
+      }
     }
-    rows.push(cols);
-  }
 
-  return rows;
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
-function calculeSolution(pieces, puzzle, boardSize) {
-  return [];
+function locatePieceInMatrix(point, matrix, piece, label) {
+  for (let i = 0; i < piece.length; i += 1) {
+    const positions = piece[i].split('');
+
+    for (let j = 0; j < positions.length; j += 1) {
+      if (positions[j] === '*') {
+        matrix[point.x + i][point.y + j] = label.toString();
+      }
+    }
+  }
 }
 
-function buildPuzzle(params) {
-  const puzzle = [];
-  const pieces = [];
+function getSolutionForPermutation(permutation, pieces, boardSize) {
+  const matrix = createMatrix(boardSize, boardSize);
 
-  for (let i = 0; i < params.pieces.length; i += 1) {
-    pieces[i] = createPiece(params.pieces[i], i);
+  for (let a = 0; a < permutation.length; a += 1) {
+    const piece = pieces[permutation[a]];
+    let located = false;
+
+    for (let i = 0; i < boardSize; i += 1) {
+      for (let j = 0; j < boardSize; j += 1) {
+        const point = { x: i, y: j };
+
+        if (isPossibleLocatePieceInMatrix(point, matrix, piece, boardSize)) {
+          locatePieceInMatrix(point, matrix, piece, permutation[a]);
+          located = true;
+          i = boardSize;
+          j = boardSize;
+        }
+      }
+    }
+
+    if (!located) return null;
   }
 
-  return calculeSolution(pieces, puzzle, params.boardSize);
+  return matrix;
 }
 
 function solvePuzzle(params) {
   try {
     validateInputRequest(params);
+    const solutions = [];
 
     if (validateQuantitySpacesOccupies(params)) {
-      return new SolutionResponse(buildPuzzle(params));
+      const permutations = permutator([...Array(params.pieces.length).keys()], [], []);
+
+      for (let i = 0; i < permutations.length; i += 1) {
+        const solution = getSolutionForPermutation(
+          permutations[i],
+          params.pieces,
+          params.boardSize
+        );
+
+        if (solution) {
+          solution.forEach((line) => {
+            solutions.push(line.toString());
+          });
+          break;
+        }
+      }
     }
 
-    return new SolutionResponse(null);
+    return new SolutionResponse(solutions.length > 0 ? solutions : null);
   } catch (error) {
     if (error instanceof RestrictionException) {
       return {
@@ -119,5 +193,7 @@ module.exports = {
   MINIMUM_LIMIT, // Only test
   validateQuantitySpacesOccupies, // Only test
   validateInputRequest, // Only test
+  createMatrix, // Only test
+  permutator, // Only test
   solvePuzzle,
 };

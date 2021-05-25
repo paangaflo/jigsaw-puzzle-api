@@ -28,10 +28,15 @@ describe('Puzzle Service Tests', () => {
     };
 
     const puzzleSolved = {
-      solution: [],
+      solution: [
+        '1222',
+        '1122',
+        '2220',
+        '2200'
+      ]
     };
 
-    describe('execute new throw RestrictionException', () => {
+    describe('execute puzzle solution without RestrictionException', () => {
       let myStub;
 
       before((done) => {
@@ -140,6 +145,46 @@ describe('Puzzle Service Tests', () => {
           ],
         ],
       })).to.equal(false);
+    });
+  });
+
+  describe('permutator Tests', () => {
+    it('Build permutation for 1 piece', () => {
+      const permutations = puzzleService.permutator([0], [], []);
+      expect(permutations).to.have.lengthOf(1);
+    });
+
+    it('Build permutation for 3 pieces', () => {
+      const permutations = puzzleService.permutator([0, 1, 2], [], []);
+      expect(permutations).to.have.lengthOf(6);
+    });
+  });
+
+  describe('createMatrix Tests', () => {
+    it('Build matrix for 1 piece', () => {
+      const matrix = puzzleService.createMatrix(1, 1);
+      expect(matrix[0]).to.have.lengthOf(1);
+    });
+
+    it('Build matrix for 3 pieces', () => {
+      const matrix = puzzleService.createMatrix(3, 3);
+      expect(matrix[0]).to.have.lengthOf(3);
+      expect(matrix[1]).to.have.lengthOf(3);
+      expect(matrix[2]).to.have.lengthOf(3);
+    });
+
+    it('Build matrix for 10 pieces', () => {
+      const matrix = puzzleService.createMatrix(10, 10);
+      expect(matrix[0]).to.have.lengthOf(10);
+      expect(matrix[1]).to.have.lengthOf(10);
+      expect(matrix[2]).to.have.lengthOf(10);
+      expect(matrix[3]).to.have.lengthOf(10);
+      expect(matrix[4]).to.have.lengthOf(10);
+      expect(matrix[5]).to.have.lengthOf(10);
+      expect(matrix[6]).to.have.lengthOf(10);
+      expect(matrix[7]).to.have.lengthOf(10);
+      expect(matrix[8]).to.have.lengthOf(10);
+      expect(matrix[9]).to.have.lengthOf(10);
     });
   });
 });

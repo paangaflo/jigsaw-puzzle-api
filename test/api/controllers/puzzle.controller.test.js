@@ -29,7 +29,7 @@ describe('Puzzle Controller Tests', () => {
 
   describe('getSolutionPuzzle Tests', () => {
     // In this case there is only one way to fill a 4x4 square with the given pieces
-    describe('POST /api/v1/jigsaw Succesfully with solution', () => {
+    describe('POST /api/v1/jigsaw Succesfully with solution 4x4 square', () => {
       let myStub;
 
       const puzzleToSolve = {
@@ -53,7 +53,171 @@ describe('Puzzle Controller Tests', () => {
       };
 
       const puzzleSolved = {
-        solution: [],
+        solution: [
+          '1222',
+          '1122',
+          '2220',
+          '2200'
+        ],
+      };
+
+      before((done) => {
+        myStub = sinon.stub(puzzleService, 'solvePuzzle').returns(puzzleSolved);
+        done();
+      });
+
+      after((done) => {
+        myStub.restore();
+        done();
+      });
+
+      it('POST /api/v1/jigsaw Succesfully', (done) => {
+        request
+          .post('/api/v1/jigsaw')
+          .send(puzzleToSolve)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            if (err) {
+              done(err);
+            } else {
+              should.not.exist(err);
+              expect(res.body).to.deep.equal(puzzleSolved);
+              done();
+            }
+          });
+      });
+    });
+
+    // In this case there is only one way to fill a 1x1 square with the given pieces
+    describe('POST /api/v1/jigsaw Succesfully with solution 1x1 square', () => {
+      let myStub;
+
+      const puzzleToSolve = {
+        boardSize: 1,
+        pieces: [
+          [
+            '*',
+          ]
+        ],
+      };
+
+      const puzzleSolved = {
+        solution: [
+          '0'
+        ],
+      };
+
+      before((done) => {
+        myStub = sinon.stub(puzzleService, 'solvePuzzle').returns(puzzleSolved);
+        done();
+      });
+
+      after((done) => {
+        myStub.restore();
+        done();
+      });
+
+      it('POST /api/v1/jigsaw Succesfully', (done) => {
+        request
+          .post('/api/v1/jigsaw')
+          .send(puzzleToSolve)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            if (err) {
+              done(err);
+            } else {
+              should.not.exist(err);
+              expect(res.body).to.deep.equal(puzzleSolved);
+              done();
+            }
+          });
+      });
+    });
+
+    // In this case there is only one way to fill a 10x10 square with the given pieces
+    describe('POST /api/v1/jigsaw Succesfully with solution 10x10 square', () => {
+      let myStub;
+
+      const puzzleToSolve = {
+        boardSize: 10,
+        pieces: [
+          [
+            '.........*',
+            '.........*',
+            '.........*',
+            '.........*',
+            '.........*',
+            '.........*',
+            '.........*',
+            '.........*',
+            '.........*',
+            '**********'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ],
+          [
+            '***',
+            '***',
+            '***'
+          ]
+        ]
+      };
+
+      const puzzleSolved = {
+        solution: [
+          '1,1,1,2,2,2,3,3,3,0',
+          '1,1,1,2,2,2,3,3,3,0',
+          '1,1,1,2,2,2,3,3,3,0',
+          '4,4,4,5,5,5,6,6,6,0',
+          '4,4,4,5,5,5,6,6,6,0',
+          '4,4,4,5,5,5,6,6,6,0',
+          '7,7,7,8,8,8,9,9,9,0',
+          '7,7,7,8,8,8,9,9,9,0',
+          '7,7,7,8,8,8,9,9,9,0',
+          '0,0,0,0,0,0,0,0,0,0'
+        ],
       };
 
       before((done) => {
@@ -109,7 +273,7 @@ describe('Puzzle Controller Tests', () => {
       };
 
       const puzzleSolved = {
-        solution: [], // TODO: When the solution is complete, it must be changed to null
+        solution: null,
       };
 
       before((done) => {
