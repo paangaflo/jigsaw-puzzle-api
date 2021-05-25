@@ -1,3 +1,5 @@
+/* eslint no-param-reassign: 'error' */
+
 const { SolutionResponse } = require('../models/solution.response.model');
 const { RestrictionException } = require('../exeptions/restriction.exception');
 
@@ -61,23 +63,18 @@ function createMatrix(x, y) {
   return matrix;
 }
 
-function permutator(input) {
-  const result = [];
+function permutator(elements, data, permutations) {
+  let cur = data || [];
+  const memo = data || [];
 
-  function permute(arr, data) {
-    var cur, memo = data || [];
-
-    for (let i = 0; i < arr.length; i += 1) {
-      cur = arr.splice(i, 1)[0];
-      if (arr.length === 0) result.push(memo.concat([cur]));
-      permute(arr.slice(), memo.concat([cur]));
-      arr.splice(i, 0, cur);
-    }
-
-    return result;
+  for (let i = 0; i < elements.length; i += 1) {
+    cur = elements.splice(i, 1);
+    if (elements.length === 0) permutations.push(memo.concat([cur[0]]));
+    permutator(elements.slice(), memo.concat([cur[0]]), permutations);
+    elements.splice(i, 0, cur[0]);
   }
 
-  return permute(input);
+  return permutations;
 }
 
 function validateQuantitySpacesOccupies(params) {
@@ -93,20 +90,22 @@ function validateQuantitySpacesOccupies(params) {
   return matrizlength === spacesOccupies;
 }
 
-function findFreeSpaceInRow(matrix, row, boardSize) {
-  for (let j = 0; j < boardSize; j += 1) {
-    if (matrix[row][j] === undefined) return { x: row, y: j };
-  }
-
-  return null;
-}
-
-function locatePieceInRow(point, matrix, line, label) {
+function isPossibleLocatePieceInMatrix(point, matrix, piece, boardSize) {
   try {
-    const positions = line.split('');
+    for (let i = 0; i < piece.length; i += 1) {
+      const positions = piece[i].split('');
 
-    for (let i = 0; i < positions.length; i += 1) {
-      if (positions[i] === '*') matrix[point.x][point.y + i] = label.toString();
+      for (let j = 0; j < positions.length; j += 1) {
+        if ((point.x + i) >= boardSize) {
+          return false;
+        }
+        if ((point.y + j) >= boardSize) {
+          return false;
+        }
+        if (positions[j] === '*' && matrix[point.x + i][point.y + j] !== undefined) {
+          return false;
+        }
+      }
     }
 
     return true;
@@ -115,18 +114,39 @@ function locatePieceInRow(point, matrix, line, label) {
   }
 }
 
+function locatePieceInMatrix(point, matrix, piece, label) {
+  for (let i = 0; i < piece.length; i += 1) {
+    const positions = piece[i].split('');
+
+    for (let j = 0; j < positions.length; j += 1) {
+      if (positions[j] === '*') {
+        matrix[point.x + i][point.y + j] = label.toString();
+      }
+    }
+  }
+}
+
 function getSolutionForPermutation(permutation, pieces, boardSize) {
   const matrix = createMatrix(boardSize, boardSize);
 
-  for (let i = 0; i < permutation.length; i += 1) {
-    for (let j = 0; j < boardSize; j += 1) {
-      if (pieces[permutation[i]][j]) {
-        const point = findFreeSpaceInRow(matrix, j, boardSize);
+  for (let a = 0; a < permutation.length; a += 1) {
+    const piece = pieces[permutation[a]];
+    let located = false;
 
-        const isPossible = locatePieceInRow(point, matrix, pieces[permutation[i]][j], 'X');
-        if (!isPossible) return null;
+    for (let i = 0; i < boardSize; i += 1) {
+      for (let j = 0; j < boardSize; j += 1) {
+        const point = { x: i, y: j };
+
+        if (isPossibleLocatePieceInMatrix(point, matrix, piece, boardSize)) {
+          locatePieceInMatrix(point, matrix, piece, permutation[a]);
+          located = true;
+          i = boardSize;
+          j = boardSize;
+        }
       }
     }
+
+    if (!located) return null;
   }
 
   return matrix;
@@ -138,7 +158,7 @@ function solvePuzzle(params) {
     const solutions = [];
 
     if (validateQuantitySpacesOccupies(params)) {
-      const permutations = permutator([...Array(params.pieces.length).keys()]);
+      const permutations = permutator([...Array(params.pieces.length).keys()], [], []);
 
       for (let i = 0; i < permutations.length; i += 1) {
         const solution = getSolutionForPermutation(
@@ -147,7 +167,12 @@ function solvePuzzle(params) {
           params.boardSize
         );
 
-        if (solution) solution.push(solution);
+        if (solution) {
+          solution.forEach((line) => {
+            solutions.push(line.toString());
+          });
+          break;
+        }
       }
     }
 
@@ -168,5 +193,7 @@ module.exports = {
   MINIMUM_LIMIT, // Only test
   validateQuantitySpacesOccupies, // Only test
   validateInputRequest, // Only test
+  createMatrix, // Only test
+  permutator, // Only test
   solvePuzzle,
 };
